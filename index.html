@@ -2,13 +2,13 @@
 <html>
 <head>
   <title>Music App</title>
+
   <style>
     body {
       margin: 0;
       font-family: Arial;
       background: #121212;
       color: white;
-      padding-bottom: 140px;
     }
 
     h1 {
@@ -18,7 +18,7 @@
 
     .searchBar {
       text-align: center;
-      margin-top: 10px;
+      margin: 15px 0;
     }
 
     input {
@@ -26,6 +26,7 @@
       width: 250px;
       border-radius: 20px;
       border: none;
+      outline: none;
     }
 
     button {
@@ -53,7 +54,7 @@
     }
 
     .card:hover {
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
 
     img {
@@ -61,26 +62,51 @@
       border-radius: 8px;
     }
 
-    /* bottom player */
-    .player {
+    /* OVERLAY PLAYER */
+    #overlay {
       position: fixed;
-      bottom: 0;
+      top: 0;
+      left: 0;
       width: 100%;
-      background: #000;
-      padding: 10px;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    #overlay iframe {
+      width: 80%;
+      height: 60%;
+      border-radius: 10px;
+    }
+
+    #closeBtn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
     }
 
     #nowPlaying {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #aaa;
+      margin-top: 15px;
+      font-size: 16px;
+      color: #ccc;
+      text-align: center;
+      max-width: 80%;
     }
   </style>
 </head>
 
 <body>
 
-<h1>Music App</h1>
+<h1>Music App 🎧</h1>
 
 <div class="searchBar">
   <input id="searchInput" placeholder="Search music...">
@@ -89,16 +115,24 @@
 
 <div class="results" id="results"></div>
 
-<!-- PLAYER -->
-<div class="player">
-  <div id="nowPlaying">Nothing playing</div>
-  <iframe id="player" width="100%" height="90" frameborder="0"></iframe>
+<!-- OVERLAY PLAYER -->
+<div id="overlay">
+  <button id="closeBtn" onclick="closePlayer()">✖</button>
+
+  <iframe 
+    id="player"
+    frameborder="0"
+    allow="autoplay; encrypted-media; fullscreen"
+    allowfullscreen>
+  </iframe>
+
+  <p id="nowPlaying">Nothing playing</p>
 </div>
 
 <script>
 const API_KEY = "AIzaSyDvRPmFsVDURig-g_SXuQ7hROCLwNrYEBY";
 
-// SEARCH MUSIC
+// SEARCH
 async function search() {
   const query = document.getElementById("searchInput").value;
 
@@ -132,13 +166,21 @@ function display(videos) {
   });
 }
 
-// PLAY SONG
+// PLAY VIDEO (BIG OVERLAY)
 function play(id, title) {
+  document.getElementById("overlay").style.display = "flex";
+
   document.getElementById("player").src =
-    `https://www.youtube.com/embed/${id}?autoplay=1`;
+    `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
 
   document.getElementById("nowPlaying").innerText =
     "Now Playing: " + title;
+}
+
+// CLOSE PLAYER
+function closePlayer() {
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("player").src = "";
 }
 </script>
 
