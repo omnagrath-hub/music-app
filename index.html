@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Makeshift YT</title>
+  <title>OmTube</title>
 
   <style>
     body {
@@ -33,14 +33,14 @@
       padding: 10px 15px;
       border-radius: 20px;
       border: none;
-      background: #1db954;
+      background: #ff0000;
       color: white;
       cursor: pointer;
     }
 
     .results {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 15px;
       padding: 20px;
     }
@@ -62,7 +62,17 @@
       border-radius: 8px;
     }
 
-    /* FULLSCREEN OVERLAY PLAYER */
+    .title {
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .channel {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* FULLSCREEN PLAYER */
     #overlay {
       position: fixed;
       top: 0;
@@ -108,22 +118,22 @@
 
 <body>
 
-<h1>Fake Ahh YT Site 😭🙏 </h1>
+<h1>OmTube ▶️</h1>
 
 <div class="searchBar">
-  <input id="searchInput" placeholder="Search music..." onkeydown="if(event.key==='Enter') search()">
+  <input id="searchInput" placeholder="Search videos..." onkeydown="if(event.key==='Enter') search()">
   <button onclick="search()">Search</button>
 </div>
 
 <div class="results" id="results"></div>
 
-<!-- FULLSCREEN PLAYER -->
+<!-- PLAYER -->
 <div id="overlay">
   <button id="closeBtn" onclick="closePlayer()">✖</button>
 
   <iframe 
     id="player"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    allow="autoplay; encrypted-media; fullscreen"
     allowfullscreen>
   </iframe>
 
@@ -133,13 +143,13 @@
 <script>
 const API_KEY = "AIzaSyDvRPmFsVDURig-g_SXuQ7hROCLwNrYEBY";
 
-// SEARCH
+// SEARCH (GENERAL YOUTUBE RESULTS)
 async function search() {
   const query = document.getElementById("searchInput").value.trim();
   if (!query) return;
 
   const res = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)} music&type=video&maxResults=12&key=${API_KEY}`
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&key=${API_KEY}`
   );
 
   const data = await res.json();
@@ -152,30 +162,29 @@ function display(videos) {
   container.innerHTML = "";
 
   videos.forEach(video => {
-    if (!video.id || !video.id.videoId) return;
-
-    const videoId = video.id.videoId;
+    if (!video.id.videoId) return;
 
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
       <img src="${video.snippet.thumbnails.medium.url}">
-      <p>${video.snippet.title}</p>
+      <div class="title">${video.snippet.title}</div>
+      <div class="channel">${video.snippet.channelTitle}</div>
     `;
 
-    div.onclick = () => play(videoId, video.snippet.title);
+    div.onclick = () => play(video.id.videoId, video.snippet.title);
 
     container.appendChild(div);
   });
 }
 
-// PLAY VIDEO (TRUE FULLSCREEN FEEL)
+// PLAY VIDEO
 function play(id, title) {
   document.getElementById("overlay").style.display = "flex";
 
   document.getElementById("player").src =
-    `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&fs=1&modestbranding=1`;
+    `https://www.youtube.com/embed/${id}?autoplay=1&controls=1`;
 
   document.getElementById("nowPlaying").innerText =
     "Now Playing: " + title;
@@ -187,7 +196,7 @@ function closePlayer() {
   document.getElementById("player").src = "";
 }
 
-// ESC key closes player
+// ESC CLOSE
 document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") closePlayer();
 });
